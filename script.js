@@ -86,7 +86,7 @@ function startChat(persona, model, apiKey, baseURL) {
         personaAvatar: p.avatar,
         personaPrompt: p.systemPrompt,
         username: "You",
-        userAvatar: "Piyush Garg Image.jpg",
+        userAvatar: "avatar.png",
         model,
         apiKey,
         baseURL
