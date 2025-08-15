@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Persona AI</title>
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="min-h-screen bg-gray-50 text-gray-900 bg-anim">
+
+    <div id="selectionContainer" class="max-w-3xl mx-auto px-6 py-10">
+        <!-- Header -->
+        <div class="mb-10 text-center">
+            <h1 class="text-3xl font-extrabold tracking-tight">Select Your Persona</h1>
+        </div>
+
+        <!-- Persona Selector -->
+        <form id="personaForm" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <!-- Hitesh Sir -->
+            <div>
+                <input id="persona-hitesh" name="persona" type="radio" value="hitesh" class="peer sr-only" />
+                <label for="persona-hitesh" class="block cursor-pointer rounded-2xl border border-gray-200 bg-white/70 backdrop-blur
+                    p-8 shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all min-h-[200px]
+                    peer-checked:border-blue-600 peer-checked:ring-2 peer-checked:ring-blue-200">
+                    <div class="flex items-start gap-5">
+                        <img src="Hitesh Choudhary.jpg" alt="Hitesh Choudhary"
+                            class="h-20 w-20 rounded-full object-cover border">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xl font-semibold">Hitesh Choudhary</h3>
+                                <svg class="h-6 w-6 opacity-0 peer-checked:opacity-100 transition" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg>
+                            </div>
+                            <p class="text-base text-gray-600 mt-2 leading-relaxed">
+                                Friendly, analogy-driven, practical walkthroughs.
+                            </p>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Piyush Sir -->
+            <div>
+                <input id="persona-piyush" name="persona" type="radio" value="piyush" class="peer sr-only" />
+                <label for="persona-piyush" class="block cursor-pointer rounded-2xl border border-gray-200 bg-white/70 backdrop-blur
+                    p-8 shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all min-h-[200px]
+                    peer-checked:border-blue-600 peer-checked:ring-2 peer-checked:ring-blue-200">
+                    <div class="flex items-start gap-5">
+                        <img src="Piyush Garg Image.jpg" alt="Piyush Garg"
+                            class="h-20 w-20 rounded-full object-cover border">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xl font-semibold">Piyush Garg</h3>
+                                <svg class="h-6 w-6 opacity-0 peer-checked:opacity-100 transition" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg>
+                            </div>
+                            <p class="text-base text-gray-600 mt-2 leading-relaxed">
+                                Crisp, no-fluff, “here’s the thing” style explanations.
+                            </p>
+                        </div>
+                    </div>
+                </label>
+            </div>
+        </form>
+
+        <!-- Model Selector -->
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold mb-6 text-center">Select Model</h2>
+            <form id="modelForm" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                <!-- Gemini -->
+                <div>
+                    <input id="model-gemini" name="model" type="radio" value="gemini" class="peer sr-only" />
+                    <label for="model-gemini"
+                        class="block cursor-pointer rounded-2xl border border-gray-200 bg-white/70 backdrop-blur
+                        p-8 shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all
+                        peer-checked:border-green-600 peer-checked:ring-2 peer-checked:ring-green-200 flex flex-col justify-between">
+                        <div class="flex items-start gap-5">
+                            <img src="gemini.jpg" alt="Gemini Model"
+                                class="h-20 w-20 rounded-full object-cover border">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-xl font-semibold">Gemini</h3>
+                                    <svg class="h-6 w-6 opacity-0 peer-checked:opacity-100 transition"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 6L9 17l-5-5" />
+                                    </svg>
+                                </div>
+                                <p class="text-base text-gray-600 mt-2 leading-relaxed">
+                                    Free to use — no API key required.
+                                </p>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- OpenAI -->
+                <div>
+                    <input id="model-openai" name="model" type="radio" value="openai" class="peer sr-only" />
+                    <label for="model-openai"
+                        class="block cursor-pointer rounded-2xl border border-gray-200 bg-white/70 backdrop-blur
+                        p-8 shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all
+                        peer-checked:border-blue-600 peer-checked:ring-2 peer-checked:ring-blue-200 flex flex-col justify-between">
+                        <div class="flex items-start gap-5">
+                            <img src="openai.png" alt="OpenAI Model"
+                                class="h-20 w-20 rounded-full object-cover border">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-xl font-semibold">OpenAI</h3>
+                                    <svg class="h-6 w-6 opacity-0 peer-checked:opacity-100 transition"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 6L9 17l-5-5" />
+                                    </svg>
+                                </div>
+                                <p class="text-base text-gray-600 mt-2 leading-relaxed">
+                                    Powerful AI — requires API key to use.
+                                </p>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </form>
+        </div>
+        <div class="mt-8 text-center">
+            <button id="startChatBtn"
+                class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+                Start Chat
+            </button>
+        </div>
+
+    </div>
+
+    <!-- OpenAI Key Modal -->
+    <div id="openaiModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+            <h2 class="text-lg font-semibold mb-4">Enter your OpenAI API Key</h2>
+            <input id="openaiKey" name="openaiKey" type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxx"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm mb-4">
+            <div class="flex justify-end gap-2">
+                <button id="cancelKey" class="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
+                <button id="saveKey"
+                    class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Container (Full Screen) -->
+    <div id="chatContainer"
+        class="flex flex-col h-screen w-screen border rounded-none shadow-lg bg-white overflow-hidden hidden">
+
+        <!-- Chat Header -->
+        <div class="flex items-center justify-between border-b px-4 py-2 bg-gray-100">
+            <h2 class="text-xl font-semibold">Chat with Persona</h2>
+            <button id="closeChat" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 break-words"></div>
+
+        <!-- Input Area -->
+        <div class="border-t px-4 py-3 flex justify-center bg-gray-100">
+            <div class="flex gap-2 w-full max-w-2xl items-end"> <!-- increased width -->
+                <textarea id="userMessage" rows="1" placeholder="Type a message..."
+                    class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none overflow-hidden"></textarea>
+                <button id="sendMessage"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+/* Animated gradient background */
+.bg-anim {
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(59, 130, 246, .15), transparent 40%),
+    radial-gradient(1000px 500px at 90% 20%, rgba(16, 185, 129, .15), transparent 45%),
+    radial-gradient(900px 600px at 50% 90%, rgba(244, 114, 182, .15), transparent 45%);
+  animation: float 14s ease-in-out infinite alternate;
+}
+
+@keyframes float {
+  0% {
+    background-position: 0% 0%, 100% 0%, 50% 100%;
+  }
+
+  100% {
+    background-position: 10% 5%, 90% 10%, 50% 95%;
+  }
+}
+
+/* Hide scrollbars everywhere but keep scroll working */
+* {
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Edge */
+}
+
+/* Allow input to wrap */
+#userMessage {
+  resize: none;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
