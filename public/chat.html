@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chat with multiple AI personas in Persona AI.">
+    <title>Persona AI - Chat</title>
+    <link rel="stylesheet" href="chat.css">
+</head>
+
+<body>
+    <div class="chat-layout">
+        <aside class="sidebar" aria-label="Persona selection">
+            <div class="sidebar-top">
+                <a href="index.html" class="brand" aria-label="Go to home page">
+                    <!-- <img src="assets/jarvis.png" alt="Persona AI logo"> -->
+                    <span>Persona AI</span>
+                </a>
+                <button class="new-chat-btn" type="button">+ New Chat</button>
+            </div>
+
+            <section class="persona-section" aria-labelledby="persona-heading">
+                <h2 id="persona-heading">Personas</h2>
+                <button class="persona-card active" type="button" aria-current="true" data-persona="Developer"
+                    data-description="Ask coding questions, get explanations, and build faster.">
+                    <span class="persona-name">Developer</span>
+                    <span class="persona-desc">Code and debugging help</span>
+                </button>
+                <button class="persona-card" type="button" data-persona="Mentor"
+                    data-description="Learn with practical guidance, structure, and clear next steps.">
+                    <span class="persona-name">Mentor</span>
+                    <span class="persona-desc">Guidance and learning path</span>
+                </button>
+                <button class="persona-card" type="button" data-persona="Friend"
+                    data-description="Enjoy easygoing, friendly, and supportive conversations.">
+                    <span class="persona-name">Friend</span>
+                    <span class="persona-desc">Friendly casual conversation</span>
+                </button>
+            </section>
+        </aside>
+
+        <main class="chat-main">
+            <header class="chat-header">
+                <div class="chat-title-wrap">
+                    <h1>Developer Persona</h1>
+                    <p>Ask coding questions, get explanations, and build faster.</p>
+                </div>
+                <button class="menu-btn" type="button" aria-label="Open personas menu">Menu</button>
+            </header>
+
+            <section class="messages" aria-label="Conversation">
+                <article class="message ai">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <p>Hello! I am your Developer Persona. What would you like to build today?</p>
+                    </div>
+                </article>
+
+                <article class="message user">
+                    <div class="message-content">
+                        <p>I want to create a simple API in Node.js. Can you help me start?</p>
+                    </div>
+                    <div class="message-avatar">You</div>
+                </article>
+
+                <article class="message ai">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <p>Absolutely. We can start with Express, set up routes, and then add middleware.</p>
+                    </div>
+                </article>
+            </section>
+
+            <footer class="chat-input-area">
+                <form class="chat-form" action="#" method="post">
+                    <label for="chat-input" class="sr-only">Type your message</label>
+                    <textarea id="chat-input" name="message" rows="1" placeholder="Type your message..."
+                        aria-label="Message input"></textarea>
+                    <button class="send-btn" type="submit">Send</button>
+                </form>
+            </footer>
+        </main>
+    </div>
+
+    <div class="persona-modal hidden" role="dialog" aria-modal="true" aria-labelledby="persona-modal-title">
+        <div class="persona-modal-backdrop" data-close-modal="true"></div>
+        <div class="persona-modal-panel">
+            <h2 id="persona-modal-title">Start a New Chat</h2>
+            <p>Choose which persona you want to chat with.</p>
+
+            <div class="persona-modal-list" aria-label="Persona options">
+                <button class="persona-modal-option" type="button" data-persona-option="Developer">
+                    <span class="persona-name">Developer</span>
+                    <span class="persona-desc">Code and debugging help</span>
+                </button>
+                <button class="persona-modal-option" type="button" data-persona-option="Mentor">
+                    <span class="persona-name">Mentor</span>
+                    <span class="persona-desc">Guidance and learning path</span>
+                </button>
+                <button class="persona-modal-option" type="button" data-persona-option="Friend">
+                    <span class="persona-name">Friend</span>
+                    <span class="persona-desc">Friendly casual conversation</span>
+                </button>
+            </div>
+
+            <div class="persona-modal-actions">
+                <button class="modal-cancel-btn" type="button">Cancel</button>
+                <button class="modal-start-btn" type="button">Start Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="chat.js" defer></script>
+</body>
+
+</html>
