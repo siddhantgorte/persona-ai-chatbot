@@ -149,6 +149,37 @@ function hideTypingIndicator() {
     state.typingIndicatorEl = null;
 }
 
+function createStreamingAIMessage() {
+    const article = document.createElement("article");
+    article.className = "message ai streaming";
+
+    const avatar = document.createElement("div");
+    avatar.className = "message-avatar";
+    avatar.textContent = "AI";
+
+    const content = document.createElement("div");
+    content.className = "message-content";
+
+    const paragraph = document.createElement("p");
+    content.appendChild(paragraph);
+
+    const meta = document.createElement("div");
+    meta.className = "message-meta";
+    meta.textContent = formatTimestamp(new Date().toISOString());
+    content.appendChild(meta);
+
+    article.append(avatar, content);
+    dom.messages.appendChild(article);
+    scrollMessagesToBottom();
+
+    return paragraph;
+}
+
+function updateStreamingAIMessage(paragraph, text) {
+    paragraph.innerHTML = escapeHtml(text).replaceAll("\n", "<br>");
+    scrollMessagesToBottom();
+}
+
 function clearMessages() {
     dom.messages.innerHTML = "";
 }
@@ -264,7 +295,7 @@ function emitReplyEvent(payload) {
     document.dispatchEvent(new CustomEvent("persona:message:reply", { detail: payload }));
 }
 
-async function sendMessageToBackend(payload) {
+async function streamMessageFromBackend(payload) {
     const response = await fetch(CHAT_API_ENDPOINT, {
         method: "POST",
         headers: {
@@ -273,19 +304,77 @@ async function sendMessageToBackend(payload) {
         body: JSON.stringify(payload),
     });
 
-    let data = {};
-    try {
-        data = await response.json();
-    } catch (_error) {
-        data = {};
-    }
+    const contentType = response.headers.get("content-type") || "";
 
     if (!response.ok) {
-        const errorMessage = data.error || data.message || "Unable to get a response from server.";
+        let errorMessage = "Unable to get a response from server.";
+
+        if (contentType.includes("application/json")) {
+            try {
+                const data = await response.json();
+                errorMessage = data.error || data.message || errorMessage;
+            } catch (_error) {
+                // Keep default error message when response body is not JSON.
+            }
+        }
+
         throw new Error(errorMessage);
     }
 
-    return data;
+    if (!response.body) {
+        throw new Error("Streaming is not supported in this browser.");
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let fullText = "";
+    let streamingParagraph = null;
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split("\n\n");
+        buffer = events.pop() || "";
+
+        for (const event of events) {
+            const dataLine = event
+                .split("\n")
+                .find((line) => line.startsWith("data: "));
+
+            if (!dataLine) continue;
+
+            const data = dataLine.slice(6).trim();
+            if (!data || data === "[DONE]") continue;
+
+            let parsed = {};
+            try {
+                parsed = JSON.parse(data);
+            } catch (_error) {
+                continue;
+            }
+
+            if (parsed.error) {
+                throw new Error(parsed.error);
+            }
+
+            const delta = String(parsed.delta || "");
+            if (!delta) continue;
+
+            hideTypingIndicator();
+
+            if (!streamingParagraph) {
+                streamingParagraph = createStreamingAIMessage();
+            }
+
+            fullText += delta;
+            updateStreamingAIMessage(streamingParagraph, fullText);
+        }
+    }
+
+    return fullText.trim();
 }
 
 async function handleSubmit(event) {
@@ -314,12 +403,10 @@ async function handleSubmit(event) {
     try {
         setPending(true);
         showTypingIndicator();
-        const data = await sendMessageToBackend(payload);
-        const replyText = String(data.reply || "").trim();
+        const replyText = await streamMessageFromBackend(payload);
         hideTypingIndicator();
 
         if (replyText) {
-            addMessage("ai", replyText, { timestamp: new Date().toISOString() });
             emitReplyEvent({ ...payload, reply: replyText });
         } else {
             addMessage("ai", "I received your message, but no reply text came from the server.");

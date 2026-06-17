@@ -84,19 +84,39 @@ async function getStreamingResponse(userMessage, res) {
         conversation.push({ role: "user", content: userMessage });
         limitMemory();
 
-        const completion = await client.chat.completions.create({
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Connection", "keep-alive");
+
+        const stream = await client.chat.completions.create({
             model: "gpt-4o-mini",
             messages: conversation,
+            stream: true,
         });
 
-        const reply = completion.choices[0].message.content;
+        let fullReply = "";
 
-        conversation.push({ role: "assistant", content: reply });
+        for await (const chunk of stream) {
+            const delta = chunk.choices[0]?.delta?.content || "";
+            if (!delta) continue;
 
-        res.json({ reply }); // ✅ FIX
+            fullReply += delta;
+            res.write(`data: ${JSON.stringify({ delta })}\n\n`);
+        }
+
+        conversation.push({ role: "assistant", content: fullReply });
+        res.write("data: [DONE]\n\n");
+        res.end();
     } catch (error) {
         console.error("Error:", error);
-        res.status(500).json({ error: "Error generating response" });
+
+        if (!res.headersSent) {
+            res.status(500).json({ error: "Error generating response" });
+            return;
+        }
+
+        res.write(`data: ${JSON.stringify({ error: "Error generating response" })}\n\n`);
+        res.end();
     }
 }
 
