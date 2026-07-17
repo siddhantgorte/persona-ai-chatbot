@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:4000/api/chat";
+// const API_URL = "http://localhost:4000/api/chat";
+const API_URL = "/api/chat";
 
 export async function streamChatResponse(
     message,
