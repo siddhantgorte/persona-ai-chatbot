@@ -1,5 +1,6 @@
 const http = require("http");
 const dotenv = require("dotenv");
+
 dotenv.config();
 
 const app = require("./src/app");
@@ -15,6 +16,7 @@ async function startServer() {
     server.listen(PORT, () => {
         console.log(`Server running on http://localhost:${PORT}`);
     });
+    
 }
 
 startServer();
