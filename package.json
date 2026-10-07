@@ -1,28 +1,14 @@
 {
-  "name": "persona-ai",
+  "name": "persona-ai-root",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "private": true,
   "scripts": {
-    "build": "npm --prefix client install && npm --prefix client run build",
-    "start": "node server.js",
-    "dev": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "@clerk/backend": "^3.11.7",
-    "@clerk/express": "^2.1.43",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "mongodb": "^7.5.0",
-    "mongoose": "^9.7.4",
-    "openai": "^6.35.0",
-    "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1"
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }
