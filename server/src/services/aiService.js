@@ -1,32 +1,34 @@
 const OpenAI = require("openai");
 const { getPersonaPrompt } = require("../config/personas");
 
-// Determine model name from .env (defaults to Gemini)
-const MODEL_NAME = process.env.AI_MODEL || "gemini-2.5-flash";
+const MODEL_NAME = process.env.AI_MODEL || "gemini-1.5-flash";
 const isGeminiModel = MODEL_NAME.toLowerCase().startsWith("gemini");
 
-// Configure OpenAI SDK based on model
 const client = isGeminiModel
     ? new OpenAI({
           apiKey: process.env.GEMINI_API_KEY,
           baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
       })
-    : new OpenAI(); // Default OpenAI: auto-picks OPENAI_API_KEY and api.openai.com
+    : new OpenAI();
 
 /**
  * Streams AI completion back over Server-Sent Events (SSE).
- * Stateless: uses message history passed in from the client request.
  */
-async function streamChat({ persona, messages, res }) {
+async function streamChat({ persona, messages, res, onComplete }) {
     const systemPrompt = getPersonaPrompt(persona);
 
-    // Format messages: System prompt + conversation history
+    // Filter out invalid/empty messages and typing indicators
+    const cleanMessages = (Array.isArray(messages) ? messages : [])
+        .filter((m) => m && m.role !== "typing")
+        .map((m) => ({
+            role: m.role === "ai" || m.role === "assistant" ? "assistant" : "user",
+            content: String(m.content || m.text || "").trim(),
+        }))
+        .filter((m) => m.content.length > 0);
+
     const formattedMessages = [
         { role: "system", content: systemPrompt },
-        ...messages.map((m) => ({
-            role: m.role === "ai" || m.role === "assistant" ? "assistant" : "user",
-            content: m.text || m.content || "",
-        })),
+        ...cleanMessages,
     ];
 
     // Keep memory bounded to the last 12 messages
@@ -46,15 +48,26 @@ async function streamChat({ persona, messages, res }) {
             stream: true,
         });
 
+        let fullReply = "";
+
         for await (const chunk of stream) {
             const delta = chunk.choices[0]?.delta?.content || "";
             if (delta) {
+                fullReply += delta;
                 res.write(`data: ${JSON.stringify({ delta })}\n\n`);
             }
         }
 
         res.write("data: [DONE]\n\n");
         res.end();
+
+        if (typeof onComplete === "function") {
+            try {
+                await onComplete(fullReply);
+            } catch (saveErr) {
+                console.error("Failed to persist conversation history:", saveErr);
+            }
+        }
     } catch (error) {
         console.error("AI Streaming Error:", error);
         if (!res.headersSent) {

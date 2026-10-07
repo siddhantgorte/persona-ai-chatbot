@@ -1,13 +1,17 @@
 const { streamChat } = require("../services/aiService");
+const { appendMessagesToChat, createChat } = require("../services/chatHistoryService");
+const { getUserId } = require("./chatHistoryController");
 
 const chat = async (req, res) => {
-    const { message, messages, persona } = req.body || {};
+    const { message, messages, persona, chatId } = req.body || {};
+    const userId = getUserId(req);
 
     const safePersona = String(persona || "developer").trim();
     let conversationHistory = Array.isArray(messages) ? [...messages] : [];
 
-    if (message && typeof message === "string" && message.trim()) {
-        conversationHistory.push({ role: "user", text: message.trim() });
+    const userMessage = String(message || "").trim();
+    if (userMessage) {
+        conversationHistory.push({ role: "user", content: userMessage });
     }
 
     if (conversationHistory.length === 0) {
@@ -20,6 +24,11 @@ const chat = async (req, res) => {
         persona: safePersona,
         messages: conversationHistory,
         res,
+        onComplete: async (fullReply) => {
+            if (chatId && userId) {
+                await appendMessagesToChat(chatId, userId, userMessage, fullReply);
+            }
+        },
     });
 };
 
