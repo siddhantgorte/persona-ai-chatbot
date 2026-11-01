@@ -1,65 +1,84 @@
-// const API_URL = "http://localhost:4000/api/chat";
-const API_URL = "/api/chat";
+const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim().replace(/\/$/, "") || "";
+const API_URL = `${configuredBaseUrl}/api/chat`;
 
 export async function streamChatResponse(
     message,
     persona,
-    onChunk
+    onChunk,
+    history = []
 ) {
-    const response = await fetch( API_URL, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify( {
-            message,
-            persona,
-        } ),
-    } );
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 55_000);
 
-    if ( !response.ok ) {
-        throw new Error( "Failed to get response from server." );
+    let response;
+    try {
+        response = await fetch(API_URL, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message, persona, messages: history }),
+            signal: controller.signal,
+        });
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === "AbortError") {
+            throw new Error("The request timed out. Please try again.");
+        }
+        throw new Error("Unable to reach the server. Check your connection and try again.");
+    }
+
+    if (!response.ok) {
+        clearTimeout(timeoutId);
+        let message = "Failed to get a response from the server.";
+        try {
+            const body = await response.json();
+            if (body.error) message = body.error;
+        } catch {
+            // Keep the fallback message for non-JSON responses.
+        }
+        throw new Error(message);
+    }
+
+    if (!response.body) {
+        throw new Error("The server returned an empty response.");
     }
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-
     let buffer = "";
 
-    while ( true ) {
-        const { done, value } = await reader.read();
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-        if ( done ) break;
+            buffer += decoder.decode(value, { stream: true });
+            const events = buffer.split("\n\n");
+            buffer = events.pop() || "";
 
-        buffer += decoder.decode( value, { stream: true } );
+            for (const event of events) {
+                const line = event.split("\n").find((item) => item.startsWith("data: "));
+                if (!line) continue;
 
-        const events = buffer.split( "\n\n" );
-        buffer = events.pop() || "";
+                const data = line.slice(6);
+                if (data === "[DONE]") continue;
 
-        for ( const event of events ) {
-            const line = event
-                .split( "\n" )
-                .find( ( l ) => l.startsWith( "data: " ) );
-
-            if ( !line ) continue;
-
-            const data = line.slice( 6 );
-
-            if ( data === "[DONE]" ) continue;
-
-            const parsed = JSON.parse( data );
-
-            if ( parsed.delta ) {
-                for ( const char of parsed.delta ) {
-                    onChunk( char );
-
-                    // Control typing speed
-                    await new Promise( ( resolve ) =>
-                        setTimeout( resolve, 18 )
-                    );
+                try {
+                    const parsed = JSON.parse(data);
+                    if (parsed.error) throw new Error(parsed.error);
+                    if (parsed.delta) onChunk(parsed.delta);
+                } catch (error) {
+                    if (error instanceof SyntaxError) continue;
+                    throw error;
                 }
             }
         }
+    } catch (error) {
+        if (error.name === "AbortError") {
+            throw new Error("The response timed out. Please try again.");
+        }
+        throw error;
+    } finally {
+        clearTimeout(timeoutId);
     }
 }

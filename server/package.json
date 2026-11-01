@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Backend server for Persona AI",
   "main": "server.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js"
@@ -18,6 +21,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.7.4",
-    "openai": "^6.35.0"
+    "openai": "^6.35.0",
+    "persona-ai-root": "file:.."
   }
 }

@@ -1,6 +1,6 @@
 # Persona AI
 
-Persona AI is a full-stack chat application that lets users interact with AI personas such as Developer, Mentor, and Friend. The app combines a React frontend, an Express backend, Clerk authentication, MongoDB persistence, and streaming responses from OpenAI.
+Persona AI is a full-stack chat application that lets users interact with AI personas such as Developer, Mentor, and Friend. The app combines a React frontend, an Express backend, Clerk authentication, MongoDB persistence, and Gemini or OpenAI model responses.
 
 ## Features
 
@@ -16,7 +16,7 @@ Persona AI is a full-stack chat application that lets users interact with AI per
 - Backend: Node.js, Express
 - Authentication: Clerk
 - Database: MongoDB + Mongoose
-- AI: OpenAI API
+- AI: Google Gemini API or OpenAI API
 
 ## Project Structure
 
@@ -89,6 +89,25 @@ The frontend will usually run on http://localhost:5173 and the backend on http:/
 
 ## Notes
 
-- The app expects a valid OpenAI API key to generate responses.
+- Gemini models use Google’s native Gemini API; other models use the OpenAI SDK.
 - Ensure your MongoDB URI is valid before starting the backend.
-- If you want to change the backend port, update the PORT value in the root .env file.
+- If you want to change the backend port, update the PORT value in the server .env file.
+
+## Deployment
+
+### Frontend on Vercel
+
+1. Import the repository into Vercel.
+2. Use the repository root as the project root; the included `vercel.json` builds the `client` folder automatically.
+3. Add these environment variables in Vercel:
+   - `VITE_CLERK_PUBLISHABLE_KEY`
+   - `VITE_API_BASE_URL=https://your-backend.onrender.com`
+4. Deploy. Add the final Vercel domain to Clerk’s allowed origins/redirect settings when required.
+
+### Backend on Render
+
+1. Import the repository into Render and use **Blueprint** with the included `render.yaml`, or create a Web Service manually with `server` as the root directory.
+2. Use `npm ci` as the build command and `npm start` as the start command.
+3. Configure `MONGODB_URI`, `GEMINI_API_KEY`, `CLERK_SECRET_KEY`, `CLERK_PUBLISHABLE_KEY`, and `CLIENT_URL` in Render.
+4. Set `CLIENT_URL` to your Vercel frontend URL and deploy.
+5. Verify the deployment at `/health`, for example `https://your-backend.onrender.com/health`.

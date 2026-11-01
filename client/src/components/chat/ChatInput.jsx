@@ -59,7 +59,8 @@ function ChatInput( { persona, messages, setMessages } ) {
 
                         return updated;
                     } );
-                }
+                },
+                messages.slice(-12)
             );
         } catch ( err ) {
             setMessages( ( prev ) => {
@@ -67,7 +68,7 @@ function ChatInput( { persona, messages, setMessages } ) {
 
                 updated[updated.length - 1] = {
                     role: "ai",
-                    text: "Something went wrong.",
+                    text: err?.message || "Something went wrong. Please try again.",
                 };
 
                 return updated;

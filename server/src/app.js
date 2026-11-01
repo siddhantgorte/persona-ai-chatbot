@@ -8,6 +8,7 @@ const authRoutes = require("./routes/authRoutes");
 const { errorHandler, notFoundHandler } = require("./middleware/errorMiddleware");
 
 const app = express();
+app.set("trust proxy", 1);
 
 const allowedOrigins = [
     "http://localhost:5173",
@@ -18,10 +19,15 @@ const allowedOrigins = [
 app.use(
     cors({
         origin: function (origin, callback) {
-            if (!origin || allowedOrigins.includes(origin)) {
+            const isLocal = !origin || origin === "http://localhost:5173";
+            const isConfigured = origin && allowedOrigins.includes(origin);
+            const isVercel = origin && /^https:\/\/([a-z0-9-]+\.)*vercel\.app$/i.test(origin);
+
+            if (isLocal || isConfigured || isVercel) {
                 return callback(null, true);
             }
-            return callback(null, true);
+
+            return callback(new Error(`Origin not allowed by CORS: ${origin}`));
         },
         credentials: true,
     })
